@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<meta charset="UTF-8">
+
+<html lang="en-US">
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<style>
+  .product-image {
+    width: 95%;
+  }
+
+  .price-title {
+    font-style: italic;
+    font-size: 14px;
+  }
+
+  .price {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .product-item,
+  .product-item:link,
+  .product-item:hover,
+  .product-item:visited {
+    text-decoration: none;
+    color: black;
+  }
+
+  .item-container {
+    position: relative;
+    height: 100%;
+    padding-bottom: 50px;
+  }
+
+  .item-info {
+    position: absolute;
+    bottom: 0px;
+    height: 50px;
+  }
+</style>
+
+<script type="text/babel">
+  function App() {
+      const [items, setItems] = React.useState([]);
+      const [keyword, setKeyword] = React.useState('');
+      const [categoryId, setCategoryId] = React.useState('');
+      function search(){
+          var url = "http://localhost:8080/search-product?keyword="+keyword;
+          if(categoryId != ''){
+              url += "&categoryId=" + categoryId;
+          }
+          axios.get(url)
+              .then(result => {
+                  console.log(result.data);
+                  setItems(result.data);
+              })
+      }
+      React.useEffect(function(){
+          search();
+      }, []);
+
+    return (
+      <div className="container mt-5 mb-5" ng-app="myApp" ng-controller="myCtrl">
+        <div className="row">
+          <div className="col-3 p-3 card">
+            <form>
+              <div className="product-search-info mt-3">
+                <label htmlFor="name" className="mb-1"><b>Tên sản phẩm:</b></label>
+                <input className="form-control"
+                       placeholder="Nhập tên sản phẩm để tìm"
+                       value={keyword}
+                       onChange={e => setKeyword(e.target.value)}/>
+              </div>
+
+              <div className="brand-search-info mt-3">
+                <label htmlFor="brandId"><b>Loại điện thoại:</b></label>
+                <div className="mt-2">
+                    <input type="radio" value=""
+                       checked={categoryId == ''}
+                       onChange={e => setCategoryId('')}
+                   />
+                  <span>Tất cả</span>
+                </div>
+                <div className="mt-1">
+                    <input type="radio" value=""
+                       checked={categoryId == 'IP'}
+                       onChange={e => setCategoryId('IP')}
+                    />
+                  <span>IPhone</span>
+                </div>
+                <div className="mt-1">
+                    <input type="radio" value=""
+                       checked={categoryId == 'ANDR'}
+                       onChange={e => setCategoryId('ANDR')}
+                    />
+                  <span>Android</span>
+                </div>
+              </div>
+
+              <div className="price-search-info mt-3">
+                <label htmlFor="priceRange"><b>Mức giá:</b></label>
+                <div className="mt-2">
+                  <input type="radio" name="priceRange" checked value=""/>
+                  <span>Tất cả</span>
+                </div>
+
+                <div className="mt-1">
+                  <input type="radio" name="priceRange" value="1"/>
+                  <span>Dưới 10 triệu</span>
+                </div>
+
+                <div className="mt-1">
+                  <input type="radio" name="priceRange" value="2"/>
+                  <span>Từ 10-20 triệu</span>
+                </div>
+
+                <div className="mt-1">
+                  <input type="radio" name="priceRange" value="3"/>
+                  <span>Trên 20 triệu</span>
+                </div>
+              </div>
+
+              <button type="button" onClick={search} className="btn btn-primary mt-4 mb-4">Tìm kiếm</button>
+            </form>
+          </div>
+          <div className="col-9">
+            <ul className="list-unstyled row">
+                {items.map(item =>
+                    <li className="list-item col-sm-4 mt-3">
+                        <div className="item-container">
+                            <a href={"product_detail.html?id=" + item.id} className="product-item">
+                                <img src={item.image}
+                                     className="product-image" alt=""/>
+                                <div className="item-info">
+                                    <div>
+                                        <span className="product-name">{item.name}</span>
+                                    </div>
+                                    <div>
+                                        <span className="price-title">Giá bán :</span>
+                                        <span className="price">{item.price} ₫</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                )}
+            </ul>
+            <nav aria-label="Page navigation example">
+              <ul className="pagination">
+                <li className="page-item"><a className="page-link" href="#/">&laquo;</a></li>
+                <li className="page-item"><a className="page-link" href="#/">&lsaquo;</a></li>
+                <li className="page-item"><a className="page-link" href="#/">&rsaquo;</a></li>
+                <li className="page-item"><a className="page-link" href="#/">&raquo;</a></li>
+              </ul>
+              <span>Hiển thị 1-10 trên tổng số 25 sản phẩm</span>
+            </nav>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  ReactDOM.render(<App />, document.getElementById('app'));
+</script>
+
+<body>
+<div id="app"></div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<html>
+<meta charset="utf-8">
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            let data = [['Sản phẩm', 'Doanh thu']];
+            axios.get("http://localhost:8080/report-by-product?fromDate=2024-07-01&toDate=2024-07-31")
+                .then(result =>{
+                    result.data.forEach(item =>{
+                       data.push([item.product, item.revenue])
+                    });
+
+                    data = google.visualization.arrayToDataTable(data);
+
+                    var options = {
+                        title: 'Doanh thu theo sản phẩm'
+                    };
+
+                    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+                    chart.draw(data, options);
+                });
+        }
+    </script>
+</head>
+<body>
+<div id="piechart" style="width: 900px; height: 500px;"></div>
+</body>
+</html>
